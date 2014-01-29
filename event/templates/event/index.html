@@ -1,0 +1,9 @@
+{% if pledges %}
+    <ul>
+    {% for pledge in pledges %}
+        <li><a href="/pledge/{{ pledge.id }}/">{{ pledge.donor }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
