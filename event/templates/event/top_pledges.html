@@ -1,0 +1,11 @@
+<div id = "top_pledges_updated"
+{% if pledges %}
+    <ul>
+    {% for pledge in pledges %}
+        <li>{{ pledge.donor }} - ${{ pledge.amount }} <br/> {{ pledge.notes }} </li>
+    {% endfor %}
+    </ul>
+    {% else %}
+    <p>No pledges are available.</p>
+{% endif %}
+</div>
