@@ -1,9 +1,117 @@
-{% if pledges %}
-    <ul>
-    {% for pledge in pledges %}
-        <li><a href="/pledge/{{ pledge.id }}/">{{ pledge.donor }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No polls are available.</p>
-{% endif %}
+<head>
+	{% load humanize %}
+	{% load staticfiles %}
+<style>
+html { 
+  background: url() no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+#pledges_wrapper{
+	width:80%;
+	float:left;
+}
+#top_pledges{
+	height:50%;
+	width:100%;
+	float:left;
+	font-size: 30px;
+}
+#recent_pledges{
+	height:50%;
+	width:100%;
+	float:left;
+	font-size: 30px
+}
+#thermometer{
+	float: left;
+	height: 100%;
+	width:20%;
+	background-image:url("../static/pledges/images/stonesbackground_dark.jpg");
+	background-size: 100%;
+	background-repeat: none;
+	z-index: 99;
+}
+#thermometer img{
+	z-index: 1;
+}
+#thermometer_cover{
+	color:blue;
+	height: 10%;
+	width:100%;
+	background-color: white;
+	position:relative;
+	z-index: 100;
+	opacity: 0.3;
+}
+#total{
+	position: absolute;
+	bottom:10px;
+	font-size: 60px;
+	text-align: center;
+}
+</style>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script></head>
+</head>
+<script type="text/javascript">
+
+(function pollTotal(){
+   setTimeout(function(){
+      $.ajax({ url: "update_total", success: function(data){
+        //Update your dashboard gauge
+        $("#total").replaceWith('<div id="total">$' + data + '</div>');
+        //Setup the next poll recursively
+        pollTotal();
+        adjustThermometer(150000, data)
+        console.log(parseFloat(data))
+      }});
+  }, 3000);
+})();
+
+(function pollRecent(){
+   setTimeout(function(){
+      $.ajax({ url: "update_recent", success: function(data){
+        //Update your dashboard gauge
+        $("#recent_pledges_updated").replaceWith(data);
+        //Setup the next poll recursively
+        pollRecent();
+      }});
+  }, 3000);
+})();
+
+(function pollTop(){
+   setTimeout(function(){
+      $.ajax({ url: "update_top", success: function(data){
+        //Update your dashboard gauge
+        $("#top_pledges_updated").replaceWith(data);
+        //Setup the next poll recursively
+        pollTop();
+      }});
+  }, 3000);
+})();
+function adjustThermometer(goal, total){
+	var left_to_goal = parseFloat(goal) - total;
+    var percentage_left = left_to_goal/parseFloat(goal)*100
+    console.log(left_to_goal, percentage_left)
+    $("#thermometer_cover").css('height', percentage_left.toString()+'%')
+}
+</script>
+<div id="pledges_wrapper">
+<div id="top_pledges">
+	<h2>Top Ten Pledges</h2>
+	<div id="top_pledges_updated">
+	</div>
+</div>
+<div id="recent_pledges">
+	<h2>Recent Pledges</h2>
+	<div id="recent_pledges_updated">
+	</div>
+</div>
+</div>
+    <div id="thermometer">
+    	<div id="thermometer_cover">
+    		<span id="total"></span>
+    	</div>
+    <div>
